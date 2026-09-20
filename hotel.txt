@@ -1,0 +1,10 @@
+P101|Phong Don Nho|Standard|300000|0
+P102|Phong Don Lon|Superior|500000|1
+P201|Phong Doi Thuong|Standard|600000|0
+P202|Phong Doi Ban Cong|Deluxe|900000|1
+P301|Phong Gia Dinh 1|Family|1200000|0
+P302|Phong Gia Dinh 2|Family|1500000|1
+P401|Phong VIP Tieu Chuan|VIP|2000000|0
+P402|Phong VIP Cao Cap|VIP|2500000|1
+P501|Phong Tong Thong|Suite|5000000|0
+P502|Phong Tinh Yeu|Couple|800000|1
