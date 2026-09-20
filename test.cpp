@@ -24,6 +24,18 @@ void khoitao(LIST *L) {
     L->ptail = NULL;
 }
 
+typedef struct NodeMa {
+    char maPhong[10];
+    struct ROOM *thongTin;      
+    struct NodeMa *left, *right;
+} NodeMa;
+
+typedef struct NodeTen {
+    char tenPhong[30];
+    struct ROOM *thongTin;      
+    struct NodeTen *left, *right;
+} NodeTen;
+
 NODE *getnode(struct ROOM x) {
     NODE *p = (NODE *)malloc(sizeof(NODE));
 
@@ -220,76 +232,35 @@ void timTheoTen(LIST *L) {
     }
 }
 
-void timTheoLoai(LIST *L) {
-    char loai[20];
-
-    getchar();
-
-    printf("Nhap loai phong can tim: ");
-    fgets(loai, sizeof(loai), stdin);
-    loai[strcspn(loai, "\n")] = '\0';
-
-    NODE *p = L->phead;
-    int found = 0;
-
-    while (p != NULL) {
-        if (strcmp(p->data.loaiPhong, loai) == 0) {
-            printf("\nMa: %s | Ten: %s | Gia: %.0f | Trang thai: %s\n",
-                   p->data.maPhong,
-                   p->data.tenPhong,
-                   p->data.giaPhong,
-                   p->data.trangThai == 0 ? "Trong" : "Da thue");
-
-            found = 1;
-        }
-
-        p = p->pnext;
-    }
-
-    if (!found) {
-        printf("Khong tim thay phong!\n");
-    }
+NodeTen* searchTheoTen(NodeTen *root, const char *tenCanTim) {
+	if (root == NULL) {
+	    return NULL; 
+	}
+	
+	int cmp = strcmp(tenCanTim, root->tenPhong);
+	
+	if (cmp == 0) {
+	    return root; 
+	} else if (cmp < 0) {
+	    return searchTheoTen(root->left, tenCanTim); 
+	} else {
+	    return searchTheoTen(root->right, tenCanTim); 
+	}
 }
-
-void timTheoKhoangGia(LIST *L) {
-    float min, max;
-    int found = 0;
-
-    printf("Nhap gia thap nhat: ");
-    scanf("%f", &min);
-
-    printf("Nhap gia cao nhat: ");
-    scanf("%f", &max);
-
-    if (min > max) {
-        printf("Khoang gia khong hop le!\n");
-        return;
-    }
-
-    NODE *p = L->phead;
-
-    while (p != NULL) {
-        if (p->data.giaPhong >= min &&
-            p->data.giaPhong <= max) {
-
-            printf("\nMa: %s | Ten: %s | Loai: %s | Gia: %.0f | Trang thai: %s\n",
-                   p->data.maPhong,
-                   p->data.tenPhong,
-                   p->data.loaiPhong,
-                   p->data.giaPhong,
-                   p->data.trangThai == 0 ? "Trong" : "Da thue");
-
-            found = 1;
-        }
-
-        p = p->pnext;
-    }
-
-    if (!found) {
-        printf("Khong co phong trong khoang gia nay!\n");
-    }
+NodeMa* searchTheoMa(NodeMa *root, const char *maCanTim){
+	if (root == NULL) {
+	    return NULL; 
+	} 
+	int cmp = strcmp(maCanTim, root->maPhong);
+	
+	if(cmp == 0){
+		return root;
+	} else if(cmp < 0){
+		return searchTheoMa(root->left, maCanTim);
+	} else {
+		return searchTheoMa(root->right, maCanTim);
+	}
 }
-
 void timKiem(LIST *L) {
     int choice;
 
@@ -305,18 +276,12 @@ void timKiem(LIST *L) {
     switch (choice) {
         case 1:
             timTheoMa(L);
+//            searchTheoMa(L);
             break;
 
         case 2:
             timTheoTen(L);
-            break;
-
-        case 3:
-            timTheoLoai(L);
-            break;
-
-        case 4:
-            timTheoKhoangGia(L);
+//            searchTheoTen(L);
             break;
 
         case 0:
@@ -636,8 +601,6 @@ void docFile(LIST *L) {
         printf("Khong tim thay file hotel.txt!\n");
         return;
     }
-
-    khoitao(L);
 
     struct ROOM room;
 
