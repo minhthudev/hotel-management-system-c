@@ -489,7 +489,8 @@ void giaiPhong(LIST *L) {
     }
     L->ptail = NULL;
 }
-//STACK - QUEUE
+//======================================================
+//STACK - Queue
 typedef struct STACKNODE {
     struct LIST data;
     struct STACKNODE *next;
@@ -498,13 +499,11 @@ typedef struct STACKNODE {
 typedef struct Request {
     int rq;
     struct ROOM room;
-
 } Request;
 
 typedef struct QueueNode {
     Request rq;
     struct QueueNode *next;
-
 } QueueNode;
 
 LIST clone(LIST *L){
