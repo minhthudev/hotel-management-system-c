@@ -20,72 +20,9 @@ typedef struct LIST {
     NODE *ptail;
 } LIST;
 
-
-
-//Struct cho Stack_Queue
-
-typedef struct STACKNODE {
-    struct LIST data;
-    struct STACKNODE *next;
-}STACKNODE;
-
-typedef struct Request {
-    int rq;
-    struct ROOM room;
-
-} Request;
-
-typedef struct QueueNode {
-    Request rq;
-    struct QueueNode *next;
-
-} QueueNode;
-
 void khoitao(LIST *L) {
     L->phead = NULL;
     L->ptail = NULL;
-}
-
-LIST clone(LIST *L){
-    LIST copy;
-    khoitao(&copy);
-    NODE *p = L->phead;
-    while (p != NULL) {
-        themCuoi(&copy, p->data);
-        p = p->pnext;
-    }
-    return copy;
-}
-
-void push(STACKNODE **top, LIST *L) {
-    STACKNODE *newNode = (STACKNODE *)malloc(sizeof(STACKNODE));
-    if (newNode == NULL) {
-        printf("Khong du bo nho de cap phat!\n");
-        return;
-    } 
-    newNode->data = clone(L);
-    newNode->next = *top;
-    *top = newNode;
-}
-
-void pop(STACKNODE **top, LIST *L){
-    STACKNODE *temp = *top;
-    if (*top==NULL) {
-        printf("Stack rong!\n");
-        return;
-    }
-    *top = (*top)->next;
-    giaiPhong(L);
-    *L = temp->data;
-    free(temp);
-}
-void clearStack(STACKNODE **top) {
-    while (*top != NULL) {
-        STACKNODE *temp = *top;
-        *top = (*top)->next;
-        giaiPhong(&temp->data); 
-        free(temp);            
-    }
 }
 
 //=========================================================
