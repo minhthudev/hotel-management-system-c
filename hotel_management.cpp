@@ -443,7 +443,7 @@ void sapXep(LIST *L) {
 //===================================================================
 //8.GHI/DOC FILE=====================================================
 void ghiFile(LIST *L) {
-    FILE *f = fopen("hotel.txt", "w");
+    FILE *f = fopen("hotel_output.txt", "w");
     if (f == NULL) {
         printf("Khong the mo file!\n");
         return;
@@ -459,11 +459,11 @@ void ghiFile(LIST *L) {
         p = p->pnext;
     }
     fclose(f);
-    printf("Da ghi danh sach vao file hotel.txt!\n");
+    printf("Da ghi danh sach vao file hotel_output.txt!\n");
 }
 
 void docFile(LIST *L) {
-    FILE *f = fopen("hotel.txt", "r");
+    FILE *f = fopen("hotel_input.txt", "r");
     if (f == NULL) {
         printf("Khong tim thay file hotel.txt!\n");
         return;
@@ -478,7 +478,7 @@ void docFile(LIST *L) {
         themCuoi(L, room);
     }
     fclose(f);
-    printf("Da doc du lieu tu file hotel.txt!\n");
+    printf("Da doc du lieu tu file hotel_input.txt!\n");
 }
 //================================================================================
 //GIAI PHONG
