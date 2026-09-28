@@ -20,12 +20,77 @@ typedef struct LIST {
     NODE *ptail;
 } LIST;
 
+
+
+//Struct cho Stack_Queue
+
+typedef struct STACKNODE {
+    struct LIST data;
+    struct STACKNODE *next;
+}STACKNODE;
+
+typedef struct Request {
+    int rq;
+    struct ROOM room;
+
+} Request;
+
+typedef struct QueueNode {
+    Request rq;
+    struct QueueNode *next;
+
+} QueueNode;
+
 void khoitao(LIST *L) {
     L->phead = NULL;
     L->ptail = NULL;
 }
 
-// Struct Node cho Cây nhị phân (Mã phòng)
+LIST clone(LIST *L){
+    LIST copy;
+    khoitao(&copy);
+    NODE *p = L->phead;
+    while (p != NULL) {
+        themCuoi(&copy, p->data);
+        p = p->pnext;
+    }
+    return copy;
+}
+
+void push(STACKNODE **top, LIST *L) {
+    STACKNODE *newNode = (STACKNODE *)malloc(sizeof(STACKNODE));
+    if (newNode == NULL) {
+        printf("Khong du bo nho de cap phat!\n");
+        return;
+    } 
+    newNode->data = clone(L);
+    newNode->next = *top;
+    *top = newNode;
+}
+
+void pop(STACKNODE **top, LIST *L){
+    STACKNODE *temp = *top;
+    if (*top==NULL) {
+        printf("Stack rong!\n");
+        return;
+    }
+    *top = (*top)->next;
+    giaiPhong(L);
+    *L = temp->data;
+    free(temp);
+}
+void clearStack(STACKNODE **top) {
+    while (*top != NULL) {
+        STACKNODE *temp = *top;
+        *top = (*top)->next;
+        giaiPhong(&temp->data); 
+        free(temp);            
+    }
+}
+
+//=========================================================
+
+// STRUCT CHO CAY NHI PHAN (MA PHONG)
 typedef struct NodeMa {
     char maPhong[10];
     struct ROOM *thongTin;      
@@ -42,7 +107,7 @@ NODE *getnode(struct ROOM x) {
     p->pnext = NULL;
     return p;
 }
-
+//TRUNG MA  
 int trungMa(LIST *L, char ma[]) {
     NODE *p = L->phead;
     while (p != NULL) {
@@ -53,7 +118,7 @@ int trungMa(LIST *L, char ma[]) {
     }
     return 0;
 }
-
+//2.THEM PHAN TU MOI
 void themCuoi(LIST *L, struct ROOM x) {
     NODE *p = getnode(x);
     if (p == NULL) return;
@@ -65,7 +130,7 @@ void themCuoi(LIST *L, struct ROOM x) {
         L->ptail = p;
     }
 }
-
+//NHAP THONG TIN PHONG
 void nhapPhong(struct ROOM *room, LIST *L) {
     do {
         printf("Nhap ma phong: ");
@@ -101,7 +166,7 @@ void nhapPhong(struct ROOM *room, LIST *L) {
         }
     } while (room->trangThai != 0 && room->trangThai != 1);
 }
-
+//1.NHAP DANH SACH
 void input(LIST *L) {
     int n;
     struct ROOM room;
@@ -122,7 +187,7 @@ void input(LIST *L) {
     }
     printf("\nNhap danh sach thanh cong!\n");
 }
-
+//3.HIEN THI DANH SACH
 void output(LIST *L) {
     NODE *p = L->phead;
 
@@ -148,9 +213,7 @@ void output(LIST *L) {
     }
     printf("================================================================================\n");
 }
-
-// ================= CÁC HÀM XỬ LÝ CÂY NHỊ PHÂN (BST) =================
-
+//TREE==============================================================
 NodeMa* insertNodeMa(NodeMa *root, struct ROOM *room) {
     if (root == NULL) {
         NodeMa *newNode = (NodeMa *)malloc(sizeof(NodeMa));
@@ -169,7 +232,6 @@ NodeMa* insertNodeMa(NodeMa *root, struct ROOM *room) {
     }
     return root;
 }
-
 NodeMa* buildTreeMa(LIST *L) {
     NodeMa *root = NULL;
     NODE *p = L->phead;
@@ -179,7 +241,6 @@ NodeMa* buildTreeMa(LIST *L) {
     }
     return root;
 }
-
 NodeMa* searchTheoMaBST(NodeMa *root, const char *maCanTim) {
     if (root == NULL) {
         return NULL; 
@@ -194,7 +255,6 @@ NodeMa* searchTheoMaBST(NodeMa *root, const char *maCanTim) {
         return searchTheoMaBST(root->right, maCanTim); 
     }
 }
-
 void freeTreeMa(NodeMa *root) {
     if (root != NULL) {
         freeTreeMa(root->left);
@@ -204,7 +264,7 @@ void freeTreeMa(NodeMa *root) {
 }
 
 // ===================================================================
-
+//4.TIM KIEM PHAN TU
 void timTheoMa(LIST *L) {
     char ma[10];
     printf("Nhap ma phong can tim: ");
@@ -225,6 +285,7 @@ void timTheoMa(LIST *L) {
     }
     printf("Khong tim thay phong!\n");
 }
+
 void timTheoMaBST(LIST *L){
 	char ma[10];
 	printf("Nhap ma phong can tim (BST): ");
@@ -271,7 +332,7 @@ void timKiem(LIST *L) {
             printf("Lua chon khong hop le!\n");
     }
 }
-
+//5.XOA PHAN TU===========================================================================
 void xoaTheoMa(LIST *L) {
 	
 	if (L->phead == NULL) {
@@ -309,7 +370,6 @@ void xoaTheoMa(LIST *L) {
     }
     printf("Khong tim thay ma phong!\n");
 }
-
 void xoaPhong(LIST *L) {
     int choice;
     do {
@@ -333,7 +393,8 @@ void xoaPhong(LIST *L) {
         }
     } while (choice != 0);
 }
-
+//=================================================================================
+//6.CAP NHAT THONG TIN
 void capNhat(LIST *L) {
     char ma[10];
     printf("Nhap ma phong can cap nhat: ");
@@ -371,13 +432,13 @@ void capNhat(LIST *L) {
     }
     printf("Khong tim thay phong!\n");
 }
-
+//HOAN DOI
 void hoanDoi(struct ROOM *a, struct ROOM *b) {
     struct ROOM temp = *a;
     *a = *b;
     *b = temp;
 }
-
+//7.SAP XEP========================================================================
 void sapXepMa(LIST *L, int tangDan) {
     NODE *p, *q;
     for (p = L->phead; p != NULL; p = p->pnext) {
@@ -442,7 +503,8 @@ void sapXep(LIST *L) {
             printf("Lua chon khong hop le!\n");
     }
 }
-
+//===================================================================
+//8.GHI/DOC FILE=====================================================
 void ghiFile(LIST *L) {
     FILE *f = fopen("hotel.txt", "w");
     if (f == NULL) {
@@ -481,7 +543,8 @@ void docFile(LIST *L) {
     fclose(f);
     printf("Da doc du lieu tu file hotel.txt!\n");
 }
-
+//================================================================================
+//GIAI PHONG
 void giaiPhong(LIST *L) {
     NODE *p;
     while (L->phead != NULL) {
@@ -491,7 +554,109 @@ void giaiPhong(LIST *L) {
     }
     L->ptail = NULL;
 }
+//======================================================
+//STACK - Queue
+typedef struct STACKNODE {
+    struct LIST data;
+    struct STACKNODE *next;
+}STACKNODE;
 
+typedef struct Request {
+    int rq;
+    struct ROOM room;
+} Request;
+
+typedef struct QueueNode {
+    Request rq;
+    struct QueueNode *next;
+} QueueNode;
+
+LIST clone(LIST *L){
+    LIST copy;
+    khoitao(&copy);
+    NODE *p = L->phead;
+    while (p != NULL) {
+        themCuoi(&copy, p->data);
+        p = p->pnext;
+    }
+    return copy;
+}
+void push(STACKNODE **top, LIST *L) {
+    STACKNODE *newNode = (STACKNODE *)malloc(sizeof(STACKNODE));
+    if (newNode == NULL) {
+        printf("Khong du bo nho de cap phat!\n");
+        return;
+    } 
+    newNode->data = clone(L);
+    newNode->next = *top;
+    *top = newNode;
+}
+void pop(STACKNODE **top, LIST *L){
+    STACKNODE *temp = *top;
+    if (*top==NULL) {
+        printf("Stack rong!\n");
+        return;
+    }
+    *top = (*top)->next;
+    giaiPhong(L);
+    *L = temp->data;
+    free(temp);
+}
+void clearStack(STACKNODE **top) {
+    while (*top != NULL) {
+        STACKNODE *temp = *top;
+        *top = (*top)->next;
+        giaiPhong(&temp->data); 
+        free(temp);            
+    }
+}
+//============================================================
+//THONG KE DU LIEU
+// 12. THONG KE DU LIEU
+void thongKe(LIST *L) {
+    if (L->phead == NULL) {
+        printf("\nDanh sach phong dang rong!\n");
+        return;
+    }
+
+    NODE *p = L->phead;
+
+    int tongPhong = 0;
+    int phongTrong = 0;
+    int phongDaThue = 0;
+    float tongGia = 0;
+    float giaCaoNhat = p->data.giaPhong;
+    float giaThapNhat = p->data.giaPhong;
+
+    while (p != NULL) {
+        tongPhong++;
+        tongGia += p->data.giaPhong;
+
+        if (p->data.trangThai == 0)
+            phongTrong++;
+        else
+            phongDaThue++;
+
+        if (p->data.giaPhong > giaCaoNhat)
+            giaCaoNhat = p->data.giaPhong;
+
+        if (p->data.giaPhong < giaThapNhat)
+            giaThapNhat = p->data.giaPhong;
+
+        p = p->pnext;
+    }
+
+    float giaTrungBinh = tongGia / tongPhong;
+
+    printf("\n========== THONG KE DU LIEU ==========\n");
+    printf("Tong so phong       : %d\n", tongPhong);
+    printf("So phong trong      : %d\n", phongTrong);
+    printf("So phong da thue    : %d\n", phongDaThue);
+    printf("Gia phong trung binh: %.0f\n", giaTrungBinh);
+    printf("Gia phong cao nhat  : %.0f\n", giaCaoNhat);
+    printf("Gia phong thap nhat : %.0f\n", giaThapNhat);
+    printf("======================================\n");
+}
 void menu() {
     printf("\n");
     printf("============================================\n");
@@ -506,6 +671,9 @@ void menu() {
     printf("7. Sap xep danh sach\n");
     printf("8. Ghi danh sach ra file\n");
     printf("9. Doc danh sach tu file\n");
+    printf("10. Undo\n");
+    printf("11. Redo\n");
+    printf("12. Thong ke du lieu\n");
     printf("0. Thoat\n");
     printf("============================================\n");
     printf("Nhap lua chon: ");
@@ -513,6 +681,8 @@ void menu() {
 
 int main() {
     LIST L;
+    STACKNODE *UndoStack = NULL;
+    STACKNODE *RedoStack = NULL;
     struct ROOM room;
     int choice;
 
@@ -520,7 +690,6 @@ int main() {
 
     do {
         menu();
-//        scanf("%d", &choice);
         if (scanf("%d", &choice) != 1) {
             while (getchar() != '\n'); 
             choice = -1; 
@@ -531,6 +700,8 @@ int main() {
                 input(&L);
                 break;
             case 2:
+            	push(&UndoStack, &L);
+                clearStack(&RedoStack);
                 printf("\n========== THEM PHONG ==========\n");
                 nhapPhong(&room, &L);
                 themCuoi(&L, room);
@@ -543,12 +714,18 @@ int main() {
                 timKiem(&L);
                 break;
             case 5:
+            	push(&UndoStack, &L);
+                clearStack(&RedoStack);
                 xoaPhong(&L);
                 break;
             case 6:
+            	push(&UndoStack, &L);
+                clearStack(&RedoStack);
                 capNhat(&L);
                 break;
             case 7:
+            	push(&UndoStack, &L);
+                clearStack(&RedoStack);
                 sapXep(&L);
                 break;
             case 8:
@@ -557,6 +734,27 @@ int main() {
             case 9:
                 docFile(&L);
                 break;
+            case 10:
+                if (UndoStack != NULL) {
+                    push(&RedoStack, &L);
+                    pop(&UndoStack, &L);
+                    printf("Hoan tac thanh cong!\n");
+                } else {
+                    printf("Khong co thao tac de hoan tac!\n");
+                }
+                break;
+            case 11:
+                if (RedoStack != NULL) {
+                    push(&UndoStack, &L);
+                    pop(&RedoStack, &L);
+                    printf("Lam lai thanh cong!\n");
+                } else {
+                    printf("Khong co thao tac de lam lai!\n");
+                }
+                break;
+            case 12:
+            	thongKe(&L);
+            	break;
             case 0:
                 printf("\nKet thuc chuong trinh!\n");
                 break;
@@ -564,7 +762,8 @@ int main() {
                 printf("Lua chon khong hop le!\n");
         }
     } while (choice != 0);
-
+	free(UndoStack);
+    free(RedoStack);
     giaiPhong(&L);
     return 0;
 }
