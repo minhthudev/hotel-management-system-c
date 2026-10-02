@@ -10,6 +10,14 @@ struct ROOM {
     int trangThai;
 };
 
+struct CUSTOMER{
+    char maKH[10];
+    char HovaTen[100];
+    char DiaChi[100];
+    char SDT[10];
+};
+
+
 typedef struct NODE {
     struct ROOM data;
     struct NODE *pnext;
@@ -19,6 +27,7 @@ typedef struct LIST {
     NODE *phead;
     NODE *ptail;
 } LIST;
+
 
 void khoitao(LIST *L) {
     L->phead = NULL;
@@ -491,62 +500,6 @@ void giaiPhong(LIST *L) {
     }
     L->ptail = NULL;
 }
-//======================================================
-//STACK - Queue
-typedef struct STACKNODE {
-    struct LIST data;
-    struct STACKNODE *next;
-}STACKNODE;
-
-typedef struct Request {
-    int rq;
-    struct ROOM room;
-} Request;
-
-typedef struct QueueNode {
-    Request rq;
-    struct QueueNode *next;
-} QueueNode;
-
-LIST clone(LIST *L){
-    LIST copy;
-    khoitao(&copy);
-    NODE *p = L->phead;
-    while (p != NULL) {
-        themCuoi(&copy, p->data);
-        p = p->pnext;
-    }
-    return copy;
-}
-void push(STACKNODE **top, LIST *L) {
-    STACKNODE *newNode = (STACKNODE *)malloc(sizeof(STACKNODE));
-    if (newNode == NULL) {
-        printf("Khong du bo nho de cap phat!\n");
-        return;
-    } 
-    newNode->data = clone(L);
-    newNode->next = *top;
-    *top = newNode;
-}
-void pop(STACKNODE **top, LIST *L){
-    STACKNODE *temp = *top;
-    if (*top==NULL) {
-        printf("Stack rong!\n");
-        return;
-    }
-    *top = (*top)->next;
-    giaiPhong(L);
-    *L = temp->data;
-    free(temp);
-}
-void clearStack(STACKNODE **top) {
-    while (*top != NULL) {
-        STACKNODE *temp = *top;
-        *top = (*top)->next;
-        giaiPhong(&temp->data); 
-        free(temp);            
-    }
-}
 //============================================================
 //THONG KE DU LIEU
 // 12. THONG KE DU LIEU
@@ -594,6 +547,167 @@ void thongKe(LIST *L) {
     printf("Gia phong thap nhat : %.0f\n", giaThapNhat);
     printf("======================================\n");
 }
+//======================================================
+//STACK - Queue
+typedef struct STACKNODE {
+    struct LIST data;
+    struct STACKNODE *next;
+}STACKNODE;
+
+LIST clone(LIST *L){
+    LIST copy;
+    khoitao(&copy);
+    NODE *p = L->phead;
+    while (p != NULL) {
+        themCuoi(&copy, p->data);
+        p = p->pnext;
+    }
+    return copy;
+}
+void push(STACKNODE **top, LIST *L) {
+    STACKNODE *newNode = (STACKNODE *)malloc(sizeof(STACKNODE));
+    if (newNode == NULL) {
+        printf("Khong du bo nho de cap phat!\n");
+        return;
+    } 
+    newNode->data = clone(L);
+    newNode->next = *top;
+    *top = newNode;
+}
+void pop(STACKNODE **top, LIST *L){
+    STACKNODE *temp = *top;
+    if (*top==NULL) {
+        printf("Stack rong!\n");
+        return;
+    }
+    *top = (*top)->next;
+    giaiPhong(L);
+    *L = temp->data;
+    free(temp);
+}
+void clearStack(STACKNODE **top) {
+    while (*top != NULL) {
+        STACKNODE *temp = *top;
+        *top = (*top)->next;
+        giaiPhong(&temp->data); 
+        free(temp);            
+    }
+}
+
+//QUEUE===========================
+
+typedef struct QueueNode {
+    int rq;
+    struct QueueNode *next;
+} QueueNode;
+
+QueueNode* CreateQueueNode(int rq){
+    QueueNode* newNode = (QueueNode*)malloc(sizeof(QueueNode));
+    newNode->rq=rq;
+    newNode->next=NULL;
+    return newNode;
+}
+void addQueue (QueueNode** head,int rq){
+    QueueNode*newNode = CreateQueueNode(rq);
+    if(*head == NULL){
+        *head=newNode;
+        return;
+    }
+    QueueNode*p =*head;
+    while(p->next!=NULL){
+        p=p->next;
+    }
+    p->next= newNode;
+}
+void freeQueue (QueueNode *Q){
+    QueueNode *p;
+    while (Q != NULL) {
+        p = Q;
+        Q = Q->next;
+        free(p);
+    }
+    Q=NULL;
+}
+void execute(QueueNode** Q,LIST *L,STACKNODE **UndoStack,   
+    STACKNODE **RedoStack, struct ROOM *room){
+    QueueNode *p = *Q;
+    if(p==NULL) return;
+    do{
+        switch (p->rq) {
+            case 1:
+                input(L);
+                break;
+            case 2:
+            	push(UndoStack, L);
+                clearStack(RedoStack);
+                printf("\n========== THEM PHONG ==========\n");
+                nhapPhong(room, L);
+                themCuoi(L, *room);
+                printf("Them phong thanh cong!\n");
+                break;
+            case 3:
+                output(L);
+                break;
+            case 4:
+                timKiem(L);
+                break;
+            case 5:
+            	push(UndoStack, L);
+                clearStack(RedoStack);
+                xoaPhong(L);
+                break;
+            case 6:
+            	push(UndoStack, L);
+                clearStack(RedoStack);
+                capNhat(L);
+                break;
+            case 7:
+            	push(UndoStack, L);
+                clearStack(RedoStack);
+                sapXep(L);
+                break;
+            case 8:
+                ghiFile(L);
+                break;
+            case 9:
+                docFile(L);
+                break;
+            case 10:
+                if (UndoStack != NULL) {
+                    push(RedoStack, L);
+                    pop(UndoStack, L);
+                    printf("Hoan tac thanh cong!\n");
+                } else {
+                    printf("Khong co thao tac de hoan tac!\n");
+                }
+                break;
+            case 11:
+                if (RedoStack != NULL) {
+                    push(UndoStack, L);
+                    pop(RedoStack, L);
+                    printf("Lam lai thanh cong!\n");
+                } else {
+                    printf("Khong co thao tac de lam lai!\n");
+                }
+                break;
+            case 12:
+            	thongKe(L);
+            	break;
+            default:
+                printf("Lua chon khong hop le!\n");
+        }
+        if(p->rq!=0){
+                printf("\nNhan Enter de tiep tuc...");
+                getchar(); 
+                getchar(); 
+                system("cls"); 
+        }
+        QueueNode *temp = p;
+        p=p->next;
+        free(temp);
+    } while (p!=NULL);
+    *Q = NULL;
+}
 void menu() {
     printf("\n");
     printf("============================================\n");
@@ -616,15 +730,16 @@ void menu() {
     printf("Nhap lua chon: ");
 }
 
+
+
 int main() {
+    QueueNode* Q = NULL;
     LIST L;
-    STACKNODE *UndoStack = NULL;
-    STACKNODE *RedoStack = NULL;
+    STACKNODE *UndoStack=NULL; 
+    STACKNODE *RedoStack=NULL;
     struct ROOM room;
-    int choice;
-
     khoitao(&L);
-
+    int choice;
     do {
         menu();
         if (scanf("%d", &choice) != 1) {
@@ -633,70 +748,12 @@ int main() {
         }
 
         switch (choice) {
-            case 1:
-                input(&L);
-                break;
-            case 2:
-            	push(&UndoStack, &L);
-                clearStack(&RedoStack);
-                printf("\n========== THEM PHONG ==========\n");
-                nhapPhong(&room, &L);
-                themCuoi(&L, room);
-                printf("Them phong thanh cong!\n");
-                break;
-            case 3:
-                output(&L);
-                break;
-            case 4:
-                timKiem(&L);
-                break;
-            case 5:
-            	push(&UndoStack, &L);
-                clearStack(&RedoStack);
-                xoaPhong(&L);
-                break;
-            case 6:
-            	push(&UndoStack, &L);
-                clearStack(&RedoStack);
-                capNhat(&L);
-                break;
-            case 7:
-            	push(&UndoStack, &L);
-                clearStack(&RedoStack);
-                sapXep(&L);
-                break;
-            case 8:
-                ghiFile(&L);
-                break;
-            case 9:
-                docFile(&L);
-                break;
-            case 10:
-                if (UndoStack != NULL) {
-                    push(&RedoStack, &L);
-                    pop(&UndoStack, &L);
-                    printf("Hoan tac thanh cong!\n");
-                } else {
-                    printf("Khong co thao tac de hoan tac!\n");
-                }
-                break;
-            case 11:
-                if (RedoStack != NULL) {
-                    push(&UndoStack, &L);
-                    pop(&RedoStack, &L);
-                    printf("Lam lai thanh cong!\n");
-                } else {
-                    printf("Khong co thao tac de lam lai!\n");
-                }
-                break;
-            case 12:
-            	thongKe(&L);
-            	break;
             case 0:
                 printf("\nKet thuc chuong trinh!\n");
                 break;
             default:
-                printf("Lua chon khong hop le!\n");
+                addQueue(&Q,choice);
+                execute(&Q,&L,&UndoStack,&RedoStack,&room);
         }
     } while (choice != 0);
 	free(UndoStack);
